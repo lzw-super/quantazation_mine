@@ -2,7 +2,7 @@
 ## linear quantization (TFlite) 
 ### post quantization 
 [TF lite paper(Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference )](https://arxiv.org/abs/1712.05877) 
-- 只需要统计原始浮点数的max、min以及规定的量化位数就可以计算出scal以及zero，然后进行量化。
+- 只需要统计原始浮点数的max、min以及规定的量化位数就可以计算出scal以及zero，然后进行量化。scal一般是浮点数（可用一维来转换成整数运算），zero一般是整数，用于量化实数0。
 ![linear quantization equal](mark_img\quantization_equal.png "linear quantization equal") 
 - 此外一些小数可以用整数来移位得到，只要误差能够接受即可。
 ![network_exa](mark_img\network_exa.png "network example")
