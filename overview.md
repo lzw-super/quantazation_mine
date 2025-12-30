@@ -2,12 +2,20 @@
 ## linear quantization (TFlite) 
 ### post quantization 
 [TF lite paper(Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference )](https://arxiv.org/abs/1712.05877) 
-- 只需要统计原始浮点数的max、min以及规定的量化位数就可以计算出scal以及zero，然后进行量化。scal一般是浮点数（可用一维来转换成整数运算），zero一般是整数，用于量化实数0。
+- 只需要统计原始浮点数的max、min以及规定的量化位数就可以计算出scal以及zero，然后进行量化。scal一般是浮点数（可用一维来转换成整数运算），zero一般是整数，用于量化实数0。这个叫均匀仿射量化（uniform affine quantization）当zero为0时，就叫对称均匀量化（symmetric quantization）。
 ![linear quantization equal](mark_img\quantization_equal.png "linear quantization equal") 
 - 此外一些小数可以用整数来移位得到，只要误差能够接受即可。
 ![network_exa](mark_img\network_exa.png "network example")
 - 因此，在最简单的后训练量化算法中，我们会先按照正常的 forward 流程跑一些数据，在这个过程中，统计输入输出以及中间 feature map 的 min、max。等统计得差不多了，我们就可以根据 min、max 来计算 scale 和 zero point，然后根据公式 (4) 中的，对一些数据项提前计算。
 - 之后，在 inference 的时候，我们会先把输入 x量化成定点整数qx，然后按照公式 (4) 计算卷积的输出qa1，这个结果依然是整型的，然后继续计算 relu 的输出 qa2。对于 fc 层来说，它本质上也是矩阵运算，因此也可以用公式 (4) 计算，然后得到 qy。最后，根据 fc 层已经计算出来的 scale 和zero point，推算回浮点实数 y。除了输入输出的量化和反量化操作，其他流程完全可以用定点运算来完成。
+
+- BN层的融合，非线性激活层的融合。  
+- 还有按元素加以及通道维度拼接的操作。 以及平均池化和最大值池化。 
+- 异质位宽以及混合精度量化
+- 常对激活使用非对称量化（存在zero point），而对权重使用对称量化。
+- 按通道量化与按张量量化。 
+
+
 [pytorch quantization demo code](https://github.com/Jermmy/pytorch-quantization-demo) 
 ![quan flow](mark_img\quan_flow.png "quantization flow")
 ### Quantitative Perception Training 
